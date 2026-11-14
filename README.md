@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kavindu Thennakoon — Portfolio
 
-## Getting Started
+Personal portfolio built with Next.js 16 (App Router, Cache Components), TypeScript, Tailwind CSS v4, GSAP + ScrollTrigger and Lenis. Projects are synced automatically from the public GitHub API.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # optional, see below
+npm run dev                  # http://localhost:3000
+npm run build && npm start   # production
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where to change things
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| What | File |
+| --- | --- |
+| Name, contact details, social links, portrait paths, CV | `config/site.ts` |
+| Featured repositories (order + optional screenshots), excluded repos | `config/featured-projects.ts` |
+| CV project details merged into matching repos | `data/cv-projects.ts` |
+| Experience / Education / Skills | `data/*.ts` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Portrait photos
 
-## Learn More
+1. Put the images in `public/images/` (e.g. `kavindu-portrait.jpg`, 4:5 ratio, ≥ 1200px tall).
+2. Set `images.hero` (and optionally `images.about`) in `config/site.ts`.
 
-To learn more about Next.js, take a look at the following resources:
+Until a path is set, the hero shows a typographic "KT" monogram.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### CV
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The original PDF is served unchanged from `public/cv/kavindu-thennakoon-cv.pdf`. Replace that file to update it.
 
-## Deploy on Vercel
+### Project screenshots
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Add images to `public/projects/` and reference them with `previewImage` in `config/featured-projects.ts` (featured repos) or `projectPreviewImages` (any repo). Projects without a screenshot get an abstract visual generated from their real GitHub metadata.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## GitHub integration
+
+`lib/github.ts` → `GET /api/github/repos`
+
+- Fetches every public repo, following Link-header pagination.
+- Excludes forks, archived, empty and profile-README repos, plus anything in `excludedRepos`.
+- Enriches each repo with the languages endpoint, `package.json` dependencies (raw.githubusercontent.com, no API quota) and the README only when needed.
+- Description priority: CV description (for CV projects) → GitHub description → README summary → neutral fallback. Boilerplate READMEs are ignored.
+- Cached server-side with `use cache` and revalidated every 60 minutes. If GitHub fails, the last good data is served; if no data has ever loaded, the CV projects are shown with a notice.
+- Unauthenticated by default (60 req/h). An optional server-only `GITHUB_TOKEN` raises the limit; it is never sent to the browser.
+
+## Contact form
+
+Without configuration, the form validates input and opens the visitor's email app with the message pre-filled (mailto). It never pretends a message was sent.
+
+To deliver messages directly, use [Resend](https://resend.com)'s free tier (3,000 emails/month):
+
+1. Create an account and an API key.
+2. Set `RESEND_API_KEY` and `CONTACT_TO_EMAIL` (and optionally `CONTACT_FROM_EMAIL` once you have verified a domain).
+
+Server-side protections: validation, a honeypot field, a minimum fill time and a per-IP rate limit.
+
+## Deployment
+
+Set `NEXT_PUBLIC_SITE_URL` to the production URL so canonical links, Open Graph tags, `sitemap.xml` and `robots.txt` use the correct domain. On Vercel, the production URL is detected automatically if this variable is not set.

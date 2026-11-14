@@ -1,0 +1,60 @@
+import type { IconType } from "react-icons";
+import { FaLinkedinIn } from "react-icons/fa6";
+import {
+  SiCloudinary,
+  SiCss,
+  SiDocker,
+  SiExpo,
+  SiFirebase,
+  SiFlask,
+  SiGit,
+  SiGithub,
+  SiGunicorn,
+  SiHtml5,
+  SiJavascript,
+  SiMongodb,
+  SiMongoose,
+  SiMysql,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiOpenjdk,
+  SiPhp,
+  SiPython,
+  SiReact,
+  SiSocketdotio,
+  SiTailwindcss,
+  SiTypescript,
+  SiVitess,
+} from "react-icons/si";
+import { Database } from "lucide-react";
+
+export const GithubIcon = SiGithub;
+export const LinkedinIcon = FaLinkedinIn;
+
+export const skillIcons: Record<string, IconType | typeof Database> = {
+  javascript: SiJavascript,
+  typescript: SiTypescript,
+  python: SiPython,
+  java: SiOpenjdk,
+  php: SiPhp,
+  html: SiHtml5,
+  css: SiCss,
+  sql: Database,
+  nextjs: SiNextdotjs,
+  react: SiReact,
+  expo: SiExpo,
+  tailwind: SiTailwindcss,
+  nodejs: SiNodedotjs,
+  flask: SiFlask,
+  mongoose: SiMongoose,
+  socketio: SiSocketdotio,
+  mysql: SiMysql,
+  vitess: SiVitess,
+  mongodb: SiMongodb,
+  firebase: SiFirebase,
+  git: SiGit,
+  github: SiGithub,
+  docker: SiDocker,
+  gunicorn: SiGunicorn,
+  cloudinary: SiCloudinary,
+};
